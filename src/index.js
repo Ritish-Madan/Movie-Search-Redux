@@ -1,11 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import './index.css';
 import App from './components/App';
-import rootReducer from './reducers'
+import combineReducers from './reducers';
+import thunk from "redux-thunk";
 
-const store = createStore(rootReducer);
+// const thunk = ({dispatch, getState}) => (next) => (action) =>{
+//   if(typeof(action) == 'function'){
+//     action(dispatch);
+//     return;
+//   };
+//   next(action);
+// };
+
+const store = createStore(combineReducers, applyMiddleware(thunk));
 
 ReactDOM.render(
   <React.StrictMode>
