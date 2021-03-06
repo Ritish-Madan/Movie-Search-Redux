@@ -1,6 +1,6 @@
 import React from 'react';
 import {handleMovieSearch, addMovieToList} from '../actions'
-import {storeContext} from '../index';
+import {connect} from '../index';
 
 
 class Navbar extends React.Component{
@@ -58,21 +58,29 @@ class Navbar extends React.Component{
     };
 };
 
-class navbarConsumer extends React.Component{
-    render(){
-        return(
-            <storeContext.Consumer>
-            {(store) =>{
-                return(
-                    <Navbar 
-                    dispatch = {store.dispatch}
-                    search = {this.props.search}
-                    />
-                )
-            }}
-            </storeContext.Consumer>
-        )
+function callback(state){
+    return{
+        search: state.search
     }
 }
 
-export default navbarConsumer;
+// class navbarConsumer extends React.Component{
+//     render(){
+//         return(
+//             <storeContext.Consumer>
+//             {(store) =>{
+//                 return(
+//                     <Navbar 
+//                     dispatch = {store.dispatch}
+//                     search = {this.props.search}
+//                     />
+//                 )
+//             }}
+//             </storeContext.Consumer>
+//         )
+//     }
+// }
+
+const connectedNavbarComponent = connect(callback)(Navbar);
+
+export default connectedNavbarComponent;
