@@ -18,6 +18,45 @@ import thunk from "redux-thunk";
 const store = createStore(combineReducers, applyMiddleware(thunk));
 export const storeContext = createContext();
 
+export function connect(callback){
+  return function(Component){
+    class ConnectedComponent extends React.Component{
+      constructor(props){
+        super(props);
+        const {store} = this.props;
+        this.unsubscribe = store.subscribe(() => {this.forceUpdate()})
+      }
+      componentWillUnmount(){
+        this.unsubscribe();
+      }
+      render(){
+        const state = this.props.store.getState();
+        const sendDataAsProps = callback(state);
+        return(
+          <Component 
+            {...sendDataAsProps}
+            dispatch = {store.dispatch}
+          />
+        )
+      }
+    }
+    class ConnectedComponentWrapper extends React.Component{
+      render(){
+        return(
+          <storeContext.Consumer>
+            {(store) =>{
+              return(<ConnectedComponent 
+                store = {store}
+              />) 
+            }}
+          </storeContext.Consumer>
+        )
+      }
+    };
+    return ConnectedComponentWrapper
+  }
+};
+
 class Provider extends React.Component{
   render(){
     const {store} = this.props;
@@ -31,8 +70,8 @@ class Provider extends React.Component{
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider value={store}>
-      <App store = {store}/>
+    <Provider store={store}>
+      <App/>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
